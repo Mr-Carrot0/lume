@@ -63,26 +63,36 @@ export function robots(userOptions?: Partial<Options>) {
   return (site: Site) => {
     site.process(async function () {
       const rules: Rule[] = [];
-      const allow = typeof options.allow === "string"
-        ? [options.allow]
-        : options.allow;
-      const disallow = typeof options.disallow === "string"
-        ? [options.disallow]
-        : options.disallow;
 
-      allow?.forEach((userAgent) =>
-        rules.push({
-          userAgent,
-          allow: "/",
-        })
-      );
+      // There's a lot of repetition in the original. idk if this improves anything 
+      [options.allow, options.disallow]
+        .map((value) => typeof value === "string" ? [value] : value)
+        .forEach((_llow, i) => {
+          _llow?.forEach((userAgent) => {
+            rules.push({ userAgent, [["allow", "disallow"][i]]: "/" });
+          });
+        });
 
-      disallow?.forEach((userAgent) =>
-        rules.push({
-          userAgent,
-          disallow: "/",
-        })
-      );
+      // const allow = typeof options.allow === "string"
+      //   ? [options.allow]
+      //   : options.allow;
+      // const disallow = typeof options.disallow === "string"
+      //   ? [options.disallow]
+      //   : options.disallow;
+
+      // allow?.forEach((userAgent) =>
+      //   rules.push({
+      //     userAgent,
+      //     allow: "/",
+      //   })
+      // );
+
+      // disallow?.forEach((userAgent) =>
+      //   rules.push({
+      //     userAgent,
+      //     disallow: "/",
+      //   })
+      // );
 
       rules.push(...options.rules ?? []);
 
